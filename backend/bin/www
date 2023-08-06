@@ -4,9 +4,9 @@
  * Module dependencies.
  */
 
-var app = require('../app');
-var debug = require('debug');
-var http = require('http');
+const app = require('../app');
+const debug = require('debug');
+const http = require('http');
 const mongoose = require('mongoose');
 const { mongoURI: db } = require('../config/keys.js')
 
