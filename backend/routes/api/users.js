@@ -1,10 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
-// const password = require('password')
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
 
+//routes/api/users.js
+
+// POST /api/users/register
 router.post('/register', async (req, res, next) => {
   // Check to make sure no one has already registered with the proposed email or
   // username.
@@ -50,12 +52,3 @@ router.post('/register', async (req, res, next) => {
 });
 
 module.exports = router;
-
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.json({
-    message: "GET /api/users"
-  });});
-
-module.exports = router;
-
