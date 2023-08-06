@@ -3,8 +3,8 @@ const router = express.Router();
 const mongoose = require('mongoose')
 const User = mongoose.model('User')
 const Tweet = mongoose.model("Tweet")
-const { requireUser } = require("../..config/passport")
-const validateTweetInput = require('../../validations/tweets');
+const { requireUser } = require("../../config/passport")
+const validateTweetInput = require('../../validation/tweets');
 
 /* GET users listing. */
 router.get('/', async (req, res) => {
