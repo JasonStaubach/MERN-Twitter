@@ -8,6 +8,7 @@ const { isProduction } = require('./config/keys');
 
 const usersRouter = require('./routes/api/users');
 const tweetsRouter = require('./routes/api/tweets');
+const csrfRouter = require('./routes/api/csrf');
 
 const app = express();
 
@@ -21,9 +22,21 @@ if (!isProduction) {
     // development server (http://localhost:3000). (In production, the Express 
     // server will serve the React files statically.)
     app.use(cors());
-  }
+}
+
+app.use(
+    csurf({
+      cookie: {
+        secure: isProduction,
+        sameSite: isProduction && "Lax",
+        httpOnly: true
+        }
+    })
+);
 
 app.use('/api/users', usersRouter);
 app.use('/api/tweets', tweetsRouter);
+app.use("/api/csrf", csrfRouter);
+
 
 module.exports = app;
