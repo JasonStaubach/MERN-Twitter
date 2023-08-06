@@ -3,9 +3,25 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 const User = mongoose.model('User');
-const passport = require('passport')
+const passport = require('passport');
+const { loginUser, restoreUser } = require('../../config/passport');
+const { isProduction } = require('../../config/keys');
 
-//routes/api/users.js
+router.get('/current', restoreUser, (req, res) => {
+  if (!isProduction) {
+    // In development, allow React server to gain access to the CSRF token
+    // whenever the current user information is first loaded into the
+    // React application
+    const csrfToken = req.csrfToken();
+    res.cookie("CSRF-TOKEN", csrfToken);
+  }
+  if (!req.user) return res.json(null);
+  res.json({
+    _id: req.user._id,
+    username: req.user.username,
+    email: req.user.email
+  });
+});
 
 // POST /api/users/register
 router.post('/register', async (req, res, next) => {
@@ -16,7 +32,7 @@ router.post('/register', async (req, res, next) => {
   });
 
   if (user) {
-    // Throw a 400 error if the email address and/or email already exists
+    // Throw a 400 error if the email address and/or username already exists
     const err = new Error("Validation Error");
     err.statusCode = 400;
     const errors = {};
@@ -43,7 +59,7 @@ router.post('/register', async (req, res, next) => {
       try {
         newUser.hashedPassword = hashedPassword;
         const user = await newUser.save();
-        return res.json({ user });
+        return res.json(await loginUser(user)); // <-- THIS IS THE CHANGED LINE
       }
       catch(err) {
         next(err);
@@ -62,7 +78,7 @@ router.post('/login', async (req, res, next) => {
       err.errors = { email: "Invalid credentials" };
       return next(err);
     }
-    return res.json({ user });
+    return res.json(await loginUser(user)); // <-- THIS IS THE CHANGED LINE
   })(req, res, next);
 });
 
